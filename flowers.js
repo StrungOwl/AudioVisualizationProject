@@ -2,8 +2,9 @@ class Particle {
     constructor(x, y, size, color) {
         this.x = x;
         this.y = y;
-        this.vx = random(-25, 25);
-        this.vy = random(-25, 25);
+        //syd: scaled this.vx and this.vy by width and height
+        this.vx = random(-0.03 * width, 0.03 * width); // Scale by width
+        this.vy = random(-0.03 * height, 0.03 * height); // Scale by height
         this.alpha = 255;
         this.size = size;
         this.color = color;
@@ -32,7 +33,8 @@ class ParticleSystem {
     }
 
     addParticle(x, y, size, color) {
-        for (let i = 0; i < 100; i++) {
+        //Sydney: More particles = more lag 
+        for (let i = 0; i < 50; i++) {
             this.particles.push(new Particle(x, y, size, color));
         }
     }
@@ -55,7 +57,9 @@ class ParticleSystem {
 
 function flower(x, y, size, numPetals, midColor, petalColor, stemColor) {
     //Drawing stem of the flower
-    drawStem(x + 2, y + 17, size, stemColor);
+
+    //SYD: Added parameter for stem length
+    drawStem(x + 2, y + 17, size, stemColor, globeScale * 0.5);
 
     // Extract the HSB values from petalColor
     let baseHueValue = hue(petalColor);
@@ -83,8 +87,14 @@ function flower(x, y, size, numPetals, midColor, petalColor, stemColor) {
  
      // Trigger explosion at the end of the interval
     if (millis() - lastSwitchTime > switchInterval - 1000) {
+
         particleSystem.addParticle(x, y, size, petalColor);
     }
+
+    //SYD: TRIGGER EXPLOSION FOR DEBUGGING 
+    // if(mouseIsPressed){
+    //     particleSystem.addParticle(x, y, size, petalColor);
+    // }
 }
 
 function drawPetal(petalColor, size) {
@@ -101,28 +111,25 @@ function drawPetal(petalColor, size) {
     endShape(CLOSE);
 }
 
-function drawStem(x, y, size, stemColor) {
+function drawStem(x, y, size, stemColor, stemLength) {
     noFill();
-    //fill(120, 100, 60); // No fill for the stem
     stroke(stemColor); // Set the stroke color for the stem
     strokeWeight(0.08 * size); // Set the stroke weight for the stem
+
+    //SYD: Added Parameter for stem length
+    let segmentLength = stemLength / 12; // Divide the stem length into segments
 
     beginShape();
     curveVertex(x, y); // Starting point at the base of the flower
     curveVertex(x, y); // Control point
-    curveVertex(x + -5, y + 25); // Control point
-    curveVertex(x + 5, y + 50); // Control point
-    curveVertex(x + -8, y + 80); // Control point
-    curveVertex(x + 8, y + 110); // Control point
-    curveVertex(x + -10, y + 140); // Control point
-    curveVertex(x + 10, y + 170); // Control point
-    curveVertex(x + -10, y + 200);
-    curveVertex(x + 10, y + 230);
-    curveVertex(x + -10, y + 270);
-    curveVertex(x + 12, y + 300);
-    curveVertex(x + -12, y + 330);
-    curveVertex(x + 14, y + 380);
-    curveVertex(x + -14, y + 420);
+    curveVertex(x - 5, y + segmentLength); // Control point
+    curveVertex(x + 5, y + 2 * segmentLength); // Control point
+    curveVertex(x - 8, y + 3 * segmentLength); // Control point
+    curveVertex(x + 8, y + 4 * segmentLength); // Control point
+    curveVertex(x - 10, y + 5 * segmentLength); // Control point
+    curveVertex(x + 10, y + 6 * segmentLength); // Control point
+    curveVertex(x - 10, y + 7 * segmentLength);
+    curveVertex(x + 10, y + 8 * segmentLength);
     endShape();
 }
 
